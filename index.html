@@ -1321,60 +1321,56 @@
         }
 
         function generateRandomOutfit() {
-            const cat = randomSelectedCategory;
-            if (!cat) return;
+    const cat = randomSelectedCategory;
+    if (!cat) return;
 
-            const formalidadLabel = cat === 'elegante-sport' ? 'Elegante Sport' : cat.charAt(0).toUpperCase() + cat.slice(1);
+    const formalidadLabel = cat === 'elegante-sport' ? 'Elegante Sport' : cat.charAt(0).toUpperCase() + cat.slice(1);
 
-            const outfitName = generateOutfitName(cat);
+    // Filtrar solo los outfits predefinidos de esa categoría
+    const outfitsDeCat = outfits.filter(o => o.formalidad === cat && !o.custom);
+    if (outfitsDeCat.length === 0) return;
 
-            lastRandomOutfit = {
-                id: Date.now(),
-                nombre: outfitName,
-                contexto: 'Generado al azar',
-                formalidad: cat,
-                prendas: {
-                    pantalon: randomPick(prendas.pantalon),
-                    camisa: randomPick(prendas.camisa),
-                    abrigo: randomPick(prendas.abrigo),
-                    zapatos: randomPick(prendas.zapatos)
-                },
-                notas: 'Outfit generado aleatoriamente',
-                custom: true
-            };
+    const outfitElegido = outfitsDeCat[Math.floor(Math.random() * outfitsDeCat.length)];
 
-            const resultArea = document.getElementById('randomResultArea');
-            resultArea.innerHTML = `
-                <div class="random-result">
-                    <div class="outfit-title">🎲 ${outfitName}</div>
-                    <span class="formality-badge ${cat}">${formalidadLabel}</span>
-                    <div class="prenda-grupo">
-                        <span class="prenda-tipo">Pantalón</span>
-                        <div class="prenda-nombre">${lastRandomOutfit.prendas.pantalon}</div>
-                    </div>
-                    <div class="prenda-grupo">
-                        <span class="prenda-tipo">Camisa</span>
-                        <div class="prenda-nombre">${lastRandomOutfit.prendas.camisa}</div>
-                    </div>
-                    <div class="prenda-grupo">
-                        <span class="prenda-tipo">Abrigo</span>
-                        <div class="prenda-nombre">${lastRandomOutfit.prendas.abrigo}</div>
-                    </div>
-                    <div class="prenda-grupo">
-                        <span class="prenda-tipo">Zapatos</span>
-                        <div class="prenda-nombre">${lastRandomOutfit.prendas.zapatos}</div>
-                    </div>
-                </div>
-            `;
+    lastRandomOutfit = {
+        ...outfitElegido,
+        id: Date.now(),
+        contexto: 'Generado al azar',
+        notas: outfitElegido.notas,
+        custom: true
+    };
 
-            // Update buttons
-            const buttonsDiv = document.querySelector('.random-dialog .dialog-buttons');
-            buttonsDiv.innerHTML = `
-                <button class="btn-cancel" onclick="closeRandomDialog()">Cerrar</button>
-                <button class="btn-retry-random" onclick="generateRandomOutfit()">Otro 🎲</button>
-                <button class="btn-save-random" onclick="saveRandomOutfit()">Guardar 💾</button>
-            `;
-        }
+    const resultArea = document.getElementById('randomResultArea');
+    resultArea.innerHTML = `
+        <div class="random-result">
+            <div class="outfit-title">🎲 ${outfitElegido.nombre}</div>
+            <span class="formality-badge ${cat}">${formalidadLabel}</span>
+            <div class="prenda-grupo">
+                <span class="prenda-tipo">Pantalón</span>
+                <div class="prenda-nombre">${outfitElegido.prendas.pantalon}</div>
+            </div>
+            <div class="prenda-grupo">
+                <span class="prenda-tipo">Camisa</span>
+                <div class="prenda-nombre">${outfitElegido.prendas.camisa}</div>
+            </div>
+            <div class="prenda-grupo">
+                <span class="prenda-tipo">Abrigo</span>
+                <div class="prenda-nombre">${outfitElegido.prendas.abrigo}</div>
+            </div>
+            <div class="prenda-grupo">
+                <span class="prenda-tipo">Zapatos</span>
+                <div class="prenda-nombre">${outfitElegido.prendas.zapatos}</div>
+            </div>
+        </div>
+    `;
+
+    const buttonsDiv = document.querySelector('.random-dialog .dialog-buttons');
+    buttonsDiv.innerHTML = `
+        <button class="btn-cancel" onclick="closeRandomDialog()">Cerrar</button>
+        <button class="btn-retry-random" onclick="generateRandomOutfit()">Otro 🎲</button>
+        <button class="btn-save-random" onclick="saveRandomOutfit()">Guardar 💾</button>
+    `;
+}
 
         function saveRandomOutfit() {
             if (!lastRandomOutfit) return;
